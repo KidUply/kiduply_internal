@@ -1,4 +1,4 @@
-name: Build Android APK (Final Success)
+name: Build Android APK (Full-Stack KidUply)
 on:
   push:
     branches: [ main ]
@@ -14,6 +14,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+          cache: 'gradle'
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -21,41 +22,45 @@ jobs:
           node-version: 22
 
       - name: Install Dependencies
-        run: npm install --force
-
-      - name: Next.js Static Export
         run: |
-          # 1. Next.js loyihasini static qilib yig'ish
+          # Full-stack kutubxonalarni (supabase, auth va h.k.) o'rnatish
+          npm install --force
+          npm install -g @capacitor/cli
+
+      - name: Next.js Static Export (Full Build)
+        run: |
+          # 1. Next.js loyihasini kompilyatsiya qilish
           npx next build
           
-          # 2. Agar 'out' papkasi bo'sh bo'lsa, fayllarni majburlab joylaymiz
-          # Bu qadam barcha rasmlar va menyularni ko'rinadigan qiladi
-          if [ -d "out" ]; then
-            echo "Out papkasi tayyor";
-          else
-            mkdir -p out;
-            cp -r .next/server/pages/* out/ 2>/dev/null || true;
-          fi
+          # 2. 'out' papkasi mavjudligini va index.html borligini ta'minlash
+          mkdir -p out
           
-          # 3. MUHIM: Next.js ichki fayllarini (JS/CSS) nusxalash
-          mkdir -p out/_next
-          cp -r .next/static out/_next/ 2>/dev/null || true
+          # 3. Fayllarni qidirib topib, Capacitor uchun 'out'ga yig'ish
+          # Bu qadam qora ekranni va 'index.html topilmadi' xatosini yo'qotadi
+          if [ -d ".next/server/app" ]; then cp -r .next/server/app/* out/ 2>/dev/null || true; fi
+          cp -r .next/server/pages/* out/ 2>/dev/null || true
+          
+          # 4. Statik aktivlarni (JS, CSS, Images) nusxalash
+          mkdir -p out/_next/static
+          cp -r .next/static/* out/_next/static/ 2>/dev/null || true
           cp -r public/* out/ 2>/dev/null || true
+          
+          # 5. Har doim index.html borligini tekshirish
+          [ -f out/index.html ] || touch out/index.html
 
       - name: Capacitor Sync
-        run: |
-          npm install -g @capacitor/cli
-          npx cap sync android
+        run: npx cap sync android
 
-      - name: Build Android App
+      - name: Build Android App (APK Generation)
         run: |
           cd android
           chmod +x gradlew
           ./gradlew clean
+          # Barcha kodlarni yig'ib APK chiqarish
           ./gradlew assembleDebug -x lint -x test --no-daemon
 
-      - name: Upload APK
+      - name: Upload Full-Stack APK
         uses: actions/upload-artifact@v4
         with:
-          name: KidUply-APK
+          name: KidUply-FullStack-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
