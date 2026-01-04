@@ -1,3 +1,4 @@
+
 name: Build Unicorn APK
 on:
   push:
@@ -8,10 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # Yangilandi
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4 # Yangilandi
         with:
           node-version: 18
 
@@ -25,19 +26,20 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4 # Yangilandi
         with:
           distribution: 'zulu'
-          java-version: '11'
+          java-version: '17' # Professional applar uchun Java 17 barqaror
 
       - name: Build Android APK
         run: |
           npx cap sync
           cd android
+          chmod +x gradlew
           ./gradlew assembleDebug
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4 # XATONI TUZATISH: v3 o'rniga v4 qo'yildi
         with:
           name: KidUply-Unicorn-Build
           path: android/app/build/outputs/apk/debug/app-debug.apk
