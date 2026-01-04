@@ -1,20 +1,28 @@
-name: Build KidUply APK
+name: KidUply Build
 on:
   push:
-    branches:
-      - main
-      - master
-
+    branches: [main, master]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js v22
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: '
-
+      - run: npm install
+      - run: npm run build
+      - run: npx cap sync
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Build APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: KidUply-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
