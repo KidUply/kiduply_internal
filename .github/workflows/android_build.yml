@@ -165,7 +165,7 @@ export default function KidUplyPro() {
         {[
           { id: 'learn', i: '📖', l: 'Learn' },
           { id: 'play', i: '🎮', l: 'Play' },
-          { id: 'connect', i: '👥', l: 'Connect' },
+          { id: 'connect', i: '👤', l: 'Connect' },
           { id: 'parents', i: '🔒', l: 'Parents', pin: true }
         ].map(tab => (
           <button key={tab.id} onClick={() => tab.pin ? setShowPin(true) : setActiveTab(tab.id)} 
