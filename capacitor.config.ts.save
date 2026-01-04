@@ -1,0 +1,6 @@
+	import type { CapacitorConfig } from '@capacitor/cli';X
+
+
+const config: CapacitorConfig = {
+  appId: 'com.kiduply.app',
+  appName: 
