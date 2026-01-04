@@ -1,9 +1,10 @@
-import type { CapacitorConfig } from '@capacitor/cli';
+import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.kiduply.app',
+  appId: 'com.kiduply.app', // o'zingizniki
   appName: 'KidUply',
-  webDir: 'out'
+  webDir: 'out', // BU YERDA 'out' bo'lishi shart
+  bundledWebRuntime: false
 };
 
 export default config;
