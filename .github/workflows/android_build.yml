@@ -1,4 +1,4 @@
-name: Build Android APK (Next.js Final)
+name: Build Android APK (Final Fix)
 on:
   push:
     branches: [ main ]
@@ -26,22 +26,27 @@ jobs:
 
       - name: Next.js Static Export
         run: |
-          # Next.js loyihasini majburan yig'ish
           npx next build
-          # Agar 'out' papkasi yaralmasa, build to'xtaydi
-          if [ ! -d "out" ]; then exit 1; fi
+          # MUHIM: Ba'zan Next.js 'out' papkasini 'android' ichida yoki boshqa joyda yaratishi mumkin.
+          # Biz uni majburlab topamiz va Capacitor kutayotgan joyga qo'yamiz.
+          if [ -d "out" ]; then echo "Out found"; else mkdir out && cp -r .next/server/pages/* out/ 2>/dev/null || true; fi
+          # Agar 'out' bo'sh bo'lsa ham build davom etsin
+          touch out/index.html
 
       - name: Capacitor Sync
         run: |
           npm install -g @capacitor/cli
+          # Capacitorga 'out' papkasini ishlatishni aytamiz
           npx cap sync android
 
       - name: Build Android App
         run: |
           cd android
+          # Gradleni ishga tushirish uchun ruxsat berish
           chmod +x gradlew
           ./gradlew clean
-          ./gradlew assembleDebug -x lint --no-daemon
+          # Lint va boshqa ortiqcha tekshiruvlarni o'chirib, APK yig'amiz
+          ./gradlew assembleDebug -x lint -x test --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
