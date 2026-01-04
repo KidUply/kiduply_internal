@@ -1,97 +1,113 @@
-import React from 'react';
+"use client";
+import React, { useState } from 'react';
 
 export default function HomePage() {
+  const [showPin, setShowPin] = useState(false);
+  const [pin, setPin] = useState('');
+
+  const handleParentsClick = () => setShowPin(true);
+  
+  const checkPin = (value: string) => {
+    if (value === '1234') {
+      alert("Ota-onalar bo'limiga xush kelibsiz!");
+      setShowPin(false);
+      setPin('');
+    } else if (value.length === 4) {
+      alert("Xato PIN-kod!");
+      setPin('');
+    }
+  };
+
   return (
-    <main className="min-h-screen bg-[#F8FAFC] p-4 font-sans text-slate-800">
+    <main className="min-h-screen bg-[#F8FAFC] pb-28 font-sans text-slate-800 relative">
       
-      {/* 1. Ixcham va Yumshoq Header */}
-      <section className="rounded-3xl bg-gradient-to-br from-[#E8F5E9] to-[#C8E6C9] p-5 shadow-sm border border-[#A5D6A7]/30">
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-xl font-extrabold text-[#2E7D32] tracking-tight">
-              Salom, Do'stim! 👋
-            </h1>
-            <p className="text-xs font-medium text-[#4CAF50] mt-0.5">
-              Bugun nima o'rganamiz?
-            </p>
-          </div>
-          <div className="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-2xl shadow-sm border border-white">
-            <p className="text-[10px] font-bold text-[#388E3C] uppercase tracking-wider">
-              Lvl 5 • 1250 XP
-            </p>
+      {/* 1. Header */}
+      <section className="p-5">
+        <div className="rounded-[32px] bg-gradient-to-br from-[#E8F5E9] to-[#C8E6C9] p-7 shadow-sm border border-[#A5D6A7]/40">
+          <div className="flex justify-between items-center text-[#2E7D32]">
+            <div>
+              <h1 className="text-2xl font-bold">Salom, Do'stim! 👋</h1>
+              <p className="text-sm font-medium mt-1">Bugun nima o'rganamiz?</p>
+            </div>
+            <div className="bg-white/80 px-4 py-2 rounded-2xl shadow-sm">
+              <p className="text-xs font-bold">Lvl 5 • 1250 XP</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 2. Haftalik Progress - Kichikroq va Silliq */}
-      <section className="mt-6 bg-white rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-            Haftalik progress
-          </h3>
-          <span className="text-[10px] text-blue-500 font-bold bg-blue-50 px-2 py-0.5 rounded-full">
-            +12% o'sish
-          </span>
+      {/* 2. Progress */}
+      <section className="px-5 mt-2">
+        <div className="bg-white rounded-[32px] p-6 shadow-sm border border-slate-100">
+          <h3 className="text-xs font-bold text-slate-400 uppercase mb-6">Haftalik progress</h3>
+          <div className="h-32 flex items-end justify-around gap-3">
+            {[30, 50, 40, 80, 60, 45, 70].map((h, i) => (
+              <div key={i} className="flex-1 flex flex-col items-center">
+                <div style={{ height: `${h}%` }} className="w-3 bg-[#A5D6A7] rounded-full"></div>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="h-24 flex items-end justify-around gap-2 px-1">
-          {[30, 50, 40, 80, 60, 45, 70].map((height, i) => (
-            <div key={i} className="group relative flex-1 flex flex-col items-center">
-              <div 
-                style={{ height: `${height}%` }} 
-                className="w-full max-w-[12px] bg-gradient-to-t from-[#A5D6A7] to-[#81C784] rounded-full transition-all duration-500 hover:scale-110 shadow-sm"
-              ></div>
+      </section>
+
+      {/* 3. Kategoriyalar */}
+      <section className="mt-8 px-5">
+        <h3 className="text-lg font-bold text-slate-700 mb-4">Kategoriyalar</h3>
+        <div className="grid grid-cols-2 gap-4">
+          {['Matematika', 'O\'zbek tili', 'Tarix', 'Mantiq'].map((cat) => (
+            <div key={cat} className="bg-white p-4 rounded-[24px] shadow-sm flex flex-col gap-3">
+              <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-2xl">📚</div>
+              <span className="text-[13px] font-bold text-slate-600">{cat}</span>
             </div>
           ))}
         </div>
       </section>
 
-      {/* 3. Kategoriyalar - 2 talik Grid (Joyni tejaydi) */}
-      <section className="mt-6">
-        <h3 className="text-sm font-bold text-slate-700 mb-3 ml-1">Kategoriyalar</h3>
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            { name: 'Matematika', color: '#E3F2FD', icon: '🔢', text: '#1E88E5' },
-            { name: 'O\'zbek tili', color: '#FFF3E0', icon: '🇺🇿', text: '#FB8C00' },
-            { name: 'Tarix', color: '#F3E5F5', icon: '🏛️', text: '#8E24AA' },
-            { name: 'Mantiq', color: '#E8F5E9', icon: '🧠', text: '#43A047' }
-          ].map((cat) => (
-            <div key={cat.name} className="bg-white p-3 rounded-2xl border border-slate-50 shadow-sm flex items-center gap-3 active:scale-95 transition-transform">
-              <div style={{ backgroundColor: cat.color }} className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-inner">
-                {cat.icon}
-              </div>
-              <span className="text-[11px] font-bold text-slate-600 leading-tight">{cat.name}</span>
-            </div>
-          ))}
+      {/* PIN-KOD OYNASI (MODAL) */}
+      {showPin && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
+          <div className="bg-white rounded-[32px] p-8 w-full max-w-sm text-center shadow-2xl">
+            <h3 className="text-xl font-bold mb-2">Ota-onalar nazorati</h3>
+            <p className="text-sm text-slate-500 mb-6">Faqat kattalar kirmasligi uchun PIN-kodni kiriting</p>
+            <input 
+              type="password" 
+              maxLength={4}
+              value={pin}
+              onChange={(e) => {
+                setPin(e.target.value);
+                checkPin(e.target.value);
+              }}
+              className="w-full text-center text-3xl tracking-[1.5rem] border-b-2 border-[#4CAF50] outline-none mb-6"
+              autoFocus
+            />
+            <button onClick={() => setShowPin(false)} className="text-slate-400 text-sm font-bold">BEKOR QILISH</button>
+          </div>
         </div>
-      </section>
+      )}
 
-      {/* 4. Do'stlar Ro'yxati - Ixcham va Chiziqdan chiqmaydi */}
-      <section className="mt-6 mb-10">
-        <h3 className="text-sm font-bold text-slate-700 mb-3 ml-1">O'quvchi do'stlar</h3>
-        <div className="space-y-2">
-          {['Sarah Johnson', 'Michael Chen'].map((friend) => (
-            <div key={friend} className="bg-white p-3 rounded-2xl border border-slate-50 flex items-center justify-between shadow-sm">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 bg-slate-100 rounded-full border-2 border-white shadow-sm shrink-0"></div>
-                <div className="min-w-0">
-                  <h4 className="text-[11px] font-bold text-slate-700 truncate">{friend}</h4>
-                  <p className="text-[9px] text-[#4CAF50] font-medium flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 bg-[#4CAF50] rounded-full animate-pulse"></span> Online
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-1.5 shrink-0">
-                <button className="px-3 py-1.5 bg-[#E8F5E9] text-[#2E7D32] text-[9px] font-extrabold rounded-xl hover:bg-[#C8E6C9] transition-colors shadow-sm uppercase">
-                  Sms
-                </button>
-                <button className="px-3 py-1.5 bg-slate-50 text-slate-400 text-[9px] font-extrabold rounded-xl hover:bg-slate-100 transition-colors uppercase">
-                  Profil
-                </button>
-              </div>
-            </div>
-          ))}
+      {/* 5. Navbar */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-100 px-8 py-4 flex justify-between items-center z-50 rounded-t-[30px] shadow-[0_-10px_40px_rgba(0,0,0,0.03)]">
+        <div className="flex flex-col items-center gap-1 text-[#4CAF50]">
+          <span className="text-2xl">📖</span>
+          <span className="text-[11px] font-bold">Learn</span>
         </div>
-      </section>
+        <div className="flex flex-col items-center gap-1 text-slate-400">
+          <span className="text-2xl">🎮</span>
+          <span className="text-[11px] font-bold">Play</span>
+        </div>
+        <div className="flex flex-col items-center gap-1 text-slate-400">
+          <span className="text-2xl">👥</span>
+          <span className="text-[11px] font-bold">Connect</span>
+        </div>
+        <div className="flex flex-col items-center gap-1 text-slate-400">
+          <span className="text-2xl">🎥</span>
+          <span className="text-[11px] font-bold">Video</span>
+        </div>
+        <div onClick={handleParentsClick} className="flex flex-col items-center gap-1 text-slate-400 cursor-pointer">
+          <span className="text-2xl">🔒</span>
+          <span className="text-[11px] font-bold">Parents</span>
+        </div>
+      </nav>
 
     </main>
   );
