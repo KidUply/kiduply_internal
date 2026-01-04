@@ -1,13 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Build vaqtida TypeScript xatolarini o'tkazib yuborish
+  output: 'export', // Static exportni yoqadi (out papkasi uchun)
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: true, // TS xatolarini o'tkazib yuboradi
   },
-  // Build vaqtida ESLint xatolarini o'tkazib yuborish
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: true, // ESLint xatolarini o'tkazib yuboradi
+  },
+  images: {
+    unoptimized: true, // Static rejimda rasmlarni optimizatsiya qilishni o'chiradi
   },
 };
 
 export default nextConfig;
+
