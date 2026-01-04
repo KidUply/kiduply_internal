@@ -14,11 +14,12 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: 'gradle'
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22  # Node.js versiyasini 22 ga ko'tardik
+          node-version: 22
 
       - name: Install Dependencies
         run: |
@@ -38,10 +39,12 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
-
+          ./gradlew clean  # Keshdagi xatolarni tozalaymiz
+          ./gradlew assembleDebug --stacktrace # Batafsil log bilan yig'amiz
+          
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: KidUply-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
+
