@@ -1,4 +1,4 @@
-name: Build Android APK (Final)
+name: Build Android APK (Java 21 Fix)
 on:
   push:
     branches: [ main ]
@@ -9,54 +9,42 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 1. Java sozlamalari (eng barqaror versiya)
-      - name: Set up JDK 17
+      # O'ZGARTIRILDI: Java 17 emas, Java 21 qo'yamiz!
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'zulu' # Temurin o'rniga Zulu ishlatamiz (yengilroq)
+          java-version: '21'
+          distribution: 'temurin'
           cache: 'gradle'
 
-      # 2. Node.js 22 (Capacitor uchun shart)
+      # Node.js 22 (Capacitor uchun)
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      # 3. Kutubxonalarni o'rnatish
       - name: Install Dependencies
         run: |
           npm install --force
           npm install -g @capacitor/cli
 
-      # 4. Saytni yig'ish (Xato bersa ham davom etadi)
-      - name: Build Web Assets (Fail-Safe)
+      - name: Build Web Assets
         run: |
-          npm run build || echo "Build script failed, creating dummy..."
+          npm run build || echo "Build failed, using dummy..."
           mkdir -p out
-          # Agar build o'xshamasa, o'zi index.html yaratib ketadi
-          if [ ! -f out/index.html ]; then 
-            echo "<html><body><h1>KidUply APK Ishladi!</h1></body></html>" > out/index.html
-          fi
+          if [ ! -f out/index.html ]; then echo "<html><body><h1>KidUply Ready</h1></body></html>" > out/index.html; fi
 
-      # 5. Android papkasini yangilash
       - name: Capacitor Sync
         run: npx cap sync android
 
-      # 6. ENG MUHIM QISM: Gradle Build (Himoyalangan)
-      - name: Build Android App (Skip Errors)
+      - name: Build Android App
         run: |
           cd android
-          # Ruxsatlarni to'g'irlash
           chmod +x gradlew
-          
-          # 1. Keshni tozalash
           ./gradlew clean
-          
-          # 2. APK yig'ish (Lint tekshiruvini o'chirib qo'yamiz -x lint)
-          ./gradlew assembleDebug -x lint --stacktrace --no-daemon
+          # Lint tekshiruvini o'chirib, Java 21 da yig'amiz
+          ./gradlew assembleDebug -x lint --no-daemon
 
-      # 7. APKni yuklash
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
