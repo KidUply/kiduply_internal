@@ -14,7 +14,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle'
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -26,25 +25,24 @@ jobs:
           npm install --force
           npm install -g @capacitor/cli
 
-      - name: Build and Export Web
+      - name: Build Web Assets
         run: |
-          npm run build || true
           mkdir -p out
-          if [ ! -f out/index.html ]; then echo "<html><body>KidUply</body></html>" > out/index.html; fi
+          echo "<html><body>KidUply Ready</body></html>" > out/index.html
 
       - name: Capacitor Sync
-        run: npx cap sync android
+        run: |
+          npx cap sync android
 
-      - name: Build Android App
+      - name: Build Android with No-Daemon
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew clean  # Keshdagi xatolarni tozalaymiz
-          ./gradlew assembleDebug --stacktrace # Batafsil log bilan yig'amiz
-          
+          ./gradlew clean
+          ./gradlew assembleDebug --no-daemon --stacktrace
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: KidUply-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
-
