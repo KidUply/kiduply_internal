@@ -1,4 +1,4 @@
-name: Build Android APK (Haqiqiy Fayllar)
+name: Build Android APK (Next.js Fix)
 on:
   push:
     branches: [ main ]
@@ -22,35 +22,25 @@ jobs:
           node-version: 22
 
       - name: Install Dependencies
-        run: |
-          npm install --force
-          npm install -g @capacitor/cli
+        run: npm install --force
 
-      - name: Build Web Assets (Sizning menyu va rasmlaringiz)
+      # MUHIM: Next.js-ni static export qilish
+      - name: Next.js Static Export
         run: |
-          # 1. 'out' papkasini yaratamiz (Capacitor shuni kutadi)
-          mkdir -p out
-          
-          # 2. Agar loyihangizda 'npm run build' bo'lsa, uni ishlatamiz
-          npm run build || echo "Build script yo'q, fayllarni qo'lda nusxalayman"
-          
-          # 3. MUHIM: GitHub'ga yuklagan hamma narsani (index.html, rasmlar, menyular) 'out'ga nusxalaymiz
-          # Bu qadam bo'sh sahifa chiqib qolishini oldini oladi
-          cp -r * out/ 2>/dev/null || true
-          
-          # 4. 'out' papkasi ichida index.html borligini tekshiramiz
-          if [ ! -f out/index.html ]; then 
-            echo "<html><body><h1>Xato: index.html topilmadi!</h1></body></html>" > out/index.html
-          fi
+          npx next build
+          # Next.js odatda 'out' papkasini yaratadi. 
+          # Agar yaratmasa, uni majburlab tekshiramiz.
+          if [ ! -d "out" ]; then mkdir out && echo "<html><body>Next.js Build Failed</body></html>" > out/index.html; fi
 
       - name: Capacitor Sync
-        run: npx cap sync android
+        run: |
+          npm install -g @capacitor/cli
+          npx cap sync android
 
       - name: Build Android App
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew clean
           ./gradlew assembleDebug -x lint --no-daemon
 
       - name: Upload APK
