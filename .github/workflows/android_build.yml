@@ -1,4 +1,4 @@
-name: Build Android APK (Next.js Fix)
+name: Build Android APK (Next.js Final)
 on:
   push:
     branches: [ main ]
@@ -24,13 +24,12 @@ jobs:
       - name: Install Dependencies
         run: npm install --force
 
-      # MUHIM: Next.js-ni static export qilish
       - name: Next.js Static Export
         run: |
+          # Next.js loyihasini majburan yig'ish
           npx next build
-          # Next.js odatda 'out' papkasini yaratadi. 
-          # Agar yaratmasa, uni majburlab tekshiramiz.
-          if [ ! -d "out" ]; then mkdir out && echo "<html><body>Next.js Build Failed</body></html>" > out/index.html; fi
+          # Agar 'out' papkasi yaralmasa, build to'xtaydi
+          if [ ! -d "out" ]; then exit 1; fi
 
       - name: Capacitor Sync
         run: |
@@ -41,6 +40,7 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
+          ./gradlew clean
           ./gradlew assembleDebug -x lint --no-daemon
 
       - name: Upload APK
