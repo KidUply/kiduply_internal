@@ -1,4 +1,4 @@
-name: Build Android APK (Final Fix)
+name: Build Android APK (Final Success)
 on:
   push:
     branches: [ main ]
@@ -14,7 +14,6 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          cache: 'gradle'
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -26,26 +25,33 @@ jobs:
 
       - name: Next.js Static Export
         run: |
+          # 1. Next.js loyihasini static qilib yig'ish
           npx next build
-          # MUHIM: Ba'zan Next.js 'out' papkasini 'android' ichida yoki boshqa joyda yaratishi mumkin.
-          # Biz uni majburlab topamiz va Capacitor kutayotgan joyga qo'yamiz.
-          if [ -d "out" ]; then echo "Out found"; else mkdir out && cp -r .next/server/pages/* out/ 2>/dev/null || true; fi
-          # Agar 'out' bo'sh bo'lsa ham build davom etsin
-          touch out/index.html
+          
+          # 2. Agar 'out' papkasi bo'sh bo'lsa, fayllarni majburlab joylaymiz
+          # Bu qadam barcha rasmlar va menyularni ko'rinadigan qiladi
+          if [ -d "out" ]; then
+            echo "Out papkasi tayyor";
+          else
+            mkdir -p out;
+            cp -r .next/server/pages/* out/ 2>/dev/null || true;
+          fi
+          
+          # 3. MUHIM: Next.js ichki fayllarini (JS/CSS) nusxalash
+          mkdir -p out/_next
+          cp -r .next/static out/_next/ 2>/dev/null || true
+          cp -r public/* out/ 2>/dev/null || true
 
       - name: Capacitor Sync
         run: |
           npm install -g @capacitor/cli
-          # Capacitorga 'out' papkasini ishlatishni aytamiz
           npx cap sync android
 
       - name: Build Android App
         run: |
           cd android
-          # Gradleni ishga tushirish uchun ruxsat berish
           chmod +x gradlew
           ./gradlew clean
-          # Lint va boshqa ortiqcha tekshiruvlarni o'chirib, APK yig'amiz
           ./gradlew assembleDebug -x lint -x test --no-daemon
 
       - name: Upload APK
